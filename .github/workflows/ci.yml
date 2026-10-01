@@ -1,0 +1,35 @@
+name: testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ${{ matrix.so }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        so: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # O juiz sao os axiomas de corpo, conferidos INTEIROS sobre um dominio
+      # pequeno de proposito: todos os pares das 183 fracoes reduzidas de ate
+      # 12/12, e todos os 103.823 triplos das 47 de ate 6/6.
+      - name: testes
+        run: dotnet test testes/Racional.Testes/Racional.Testes.csproj -c Release --nologo -v q
+
+      # As medidas rodam para REGISTRAR numeros. Nao ha asseveracao de tempo.
+      - name: o que esta mesmo dentro de um double
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release --nologo -- double
+
+      - name: as melhores aproximacoes racionais do pi
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release --nologo -- pi
